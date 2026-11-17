@@ -1,3 +1,9 @@
+/**
+ * GET /api/order-history?q=<07XXXXXXXX_OR_MPESA_RECEIPT>
+ * - Returns rider loyalty points, referral code, and eligibility flags
+ * - Returns up to 10 most recent bundle orders in East Africa Time (EAT)
+ */
+
 export async function onRequestGet(context) {
   const { request, env } = context;
 
@@ -123,4 +129,12 @@ function normalizeKenyanPhone(raw) {
   return null;
 }
 
-function jsonResponse(payload, status
+function jsonResponse(payload, status = 200) {
+  return new Response(JSON.stringify(payload), {
+    status,
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store"
+    }
+  });
+}
