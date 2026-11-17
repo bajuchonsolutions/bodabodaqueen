@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BodaBoda Queen | Instant Safaricom Data, SMS &amp; Voice Bundles</title>
+  <meta name="description" content="Buy instant, affordable Safaricom Data Bundles, SMS, Minutes &amp; Boda Rider Combos via M-Pesa Express at bodabodaqueen.co.ke." />
+  <meta name="theme-color" content="#059669" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="/manifest.json" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+
+  <!-- Top Navigation -->
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200">
+    <div class="max-w-5xl mx-auto px-4 py-3.5 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-extrabold text-lg shadow-sm">
+          BQ
+        </div>
+        <div>
+          <h1 class="font-extrabold text-lg leading-tight tracking-tight text-slate-900">
+            BodaBoda<span class="text-emerald-600">Queen</span>
+          </h1>
+          <p class="text-xs text-slate-500 font-medium hidden sm:block">Instant Safaricom Bundles</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <!-- PWA Home Screen Install Button -->
+        <button
+          id="installAppBtn"
+          onclick="triggerPwaInstall()"
+          class="hidden items-center gap-1.5 text-xs font-extrabold bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-full shadow-xs transition cursor-pointer"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/>
+          </svg>
+          Install App
+        </button>
+
+        <button
+          onclick="openLookupModal()"
+          class="inline-flex items-center gap-1.5 text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-2 rounded-full shadow-xs transition cursor-pointer"
+        >
+          <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z"/>
+          </svg>
+          My Orders &amp; Points
+        </button>
+
+        <span class="hidden md:inline-flex items-center gap-1.5 text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-full">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          M-Pesa Instant
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Banner -->
+  <section class="bg-gradient-to-br from-emerald-700 via-emerald-600 to-teal-700 text-white">
+    <div class="max-w-5xl mx-auto px-4 py-7 sm:py-10">
+      <div class="max-w-2xl">
+        <span class="inline-block text-xs font-bold uppercase tracking-wider bg-white/15 px-3 py-1 rounded-full mb-3">
+          24/7 Automated Delivery &bull; Earn Rider Loyalty Points
+        </span>
+        <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight">
+          Affordable Safaricom Data, SMS &amp; Minutes on the Go.
+        </h2>
+        <p class="mt-2.5 text-sm sm:text-base text-emerald-50">
+          Pick a bundle, enter your M-Pesa number, and confirm your PIN. Earn loyalty points on every purchase and redeem 50 points for KES 10 off!
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Category Filter Tabs -->
+  <div class="sticky top-[65px] z-20 bg-slate-50/95 backdrop-blur border-b border-slate-200">
+    <div class="max-w-5xl mx-auto px-4 py-3">
+      <div id="categoryTabs" class="flex items-center gap-2 overflow-x-auto no-scrollbar">
+        <button data-category="ALL" class="tab-btn active px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap bg-emerald-600 text-white shadow-sm transition">
+          All Offers
+        </button>
+        <button data-category="DATA" class="tab-btn px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap bg-white text-slate-700 border border-slate-200 hover:border-emerald-400 transition">
+          Data Bundles
+        </button>
+        <button data-category="COMBO" class="tab-btn px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap bg-white text-slate-700 border border-slate-200 hover:border-emerald-400 transition">
+          Boda Combos
+        </button>
+        <button data-category="VOICE" class="tab-btn px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap bg-white text-slate-700 border border-slate-200 hover:border-emerald-400 transition">
+          Minutes / Voice
+        </button>
+        <button data-category="SMS" class="tab-btn px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap bg-white text-slate-700 border border-slate-200 hover:border-emerald-400 transition">
+          SMS Bundles
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Catalog Grid -->
+  <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-6 space-y-5">
+
+    <!-- Active Referral Code Banner (Shown when opened via ?ref=BBQ-XXXXXX) -->
+    <div id="referralWelcomeBanner" class="hidden bg-amber-50 border border-amber-300 text-slate-900 rounded-2xl p-3.5 sm:p-4 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-2.5">
+        <span class="w-8 h-8 rounded-lg bg-amber-400 text-slate-950 font-extrabold flex items-center justify-center text-sm shrink-0">
+          🎁
+        </span>
+        <div class="text-xs">
+          <p class="font-extrabold text-slate-900">
+            Rider Referral Code <span id="activeRefCodeBadge" class="font-mono bg-amber-200/80 px-1.5 py-0.5 rounded">BBQ-XXXXXX</span> Applied!
+          </p>
+          <p class="text-slate-600 mt-0.5">Buy your first bundle below to unlock <strong>+15 welcome loyalty points</strong>.</p>
+        </div>
+      </div>
+      <button type="button" onclick="clearSavedReferralCode()" class="text-xs font-bold text-slate-500 hover:text-slate-800 px-2 py-1">
+        Remove
+      </button>
+    </div>
+
+    <!-- 1-Tap Repeat Last Bundle Banner (Shown for returning riders) -->
+    <div id="repeatOrderBanner" class="hidden bg-slate-900 text-white rounded-2xl p-4 sm:p-5 shadow-md border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5">
+      <div class="flex items-start sm:items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center shrink-0 font-extrabold">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h5M20 20v-5h-5M5.64 18.36A9 9 0 0020 12M18.36 5.64A9 9 0 004 12"/>
+          </svg>
+        </div>
+        <div>
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-400">
+            Quick Re-Order &bull; <span id="repeatPhoneLabel">0712345678</span>
+          </span>
+          <h3 id="repeatBundleTitle" class="font-extrabold text-base leading-snug">
+            Boda Rider Daily Pack
+          </h3>
+          <p id="repeatBundleMeta" class="text-xs text-slate-400">
+            Valid 24 Hours &bull; KES 55
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 shrink-0">
+        <button
+          onclick="triggerQuickRepeat()"
+          class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 font-extrabold text-xs shadow-sm transition cursor-pointer"
+        >
+          1-Tap Repeat Bundle
+        </button>
+        <button
+          onclick="dismissRepeatBanner()"
+          title="Dismiss shortcut"
+          class="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 flex items-center justify-center text-base transition"
+        >
+          &times;
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading Skeleton -->
+    <div id="loadingGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="h-44 rounded-2xl bg-white border border-slate-200 p-5 animate-pulse"></div>
+      <div class="h-44 rounded-2xl bg-white border border-slate-200 p-5 animate-pulse"></div>
+      <div class="h-44 rounded-2xl bg-white border border-slate-200 p-5 animate-pulse"></div>
+    </div>
+
+    <!-- Error / Empty Notice -->
+    <div id="catalogNotice" class="hidden text-center py-12 bg-white rounded-2xl border border-slate-200 px-4">
+      <p id="catalogNoticeText" class="text-slate-600 font-medium"></p>
+      <button onclick="loadProducts()" class="mt-4 px-4 py-2 bg-emerald-600 text-white text-sm font-bold rounded-xl hover:bg-emerald-700">
+        Retry
+      </button>
+    </div>
+
+    <!-- Products Container -->
+    <div id="productsGrid" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 mt-10">
+    <div class="max-w-5xl mx-auto px-4 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+      <div class="text-center sm:text-left">
+        <p>&copy; <span id="year"></span> <strong>bodabodaqueen.co.ke</strong>. Independent Authorized Safaricom Bundle Reseller (Not affiliated with Safaricom PLC).</p>
+        <p class="mt-1">Need help? WhatsApp / Call Support: <span class="font-semibold text-slate-700">0700 000 000</span></p>
+      </div>
+      <div class="flex items-center gap-4 shrink-0 font-semibold text-slate-700">
+        <button type="button" onclick="openLegalModal('PRIVACY')" class="hover:text-emerald-600 underline underline-offset-2 cursor-pointer">
+          Privacy Policy (ODPC)
+        </button>
+        <span class="text-slate-300">|</span>
+        <button type="button" onclick="openLegalModal('TERMS')" class="hover:text-emerald-600 underline underline-offset-2 cursor-pointer">
+          Terms of Service
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ======================================================================
+       MODAL 1: M-PESA CHECKOUT, LOYALTY REDEMPTION & LIVE STATUS POLLING
+       ====================================================================== -->
+  <div id="checkoutModal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-xs p-0 sm:p-4">
+    <div class="bg-white w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden transition-all max-h-[92vh] flex flex-col">
+      <div class="px-5 py-4 bg-slate-900 text-white flex items-center justify-between shrink-0">
+        <div>
+          <span id="modalCategoryBadge" class="text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">
+            DATA
+          </span>
+          <h3 id="modalBundleName" class="font-bold text-lg mt-0.5">1.5GB Daily Bundle</h3>
+        </div>
+        <button onclick="closeCheckoutModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white text-lg">
+          &times;
+        </button>
+      </div>
+
+      <!-- STEP 1: Phone Input & Loyalty Form -->
+      <form id="checkoutForm" class="p-5 space-y-4 overflow-y-auto">
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 flex items-center justify-between">
+          <div>
+            <p class="text-xs text-emerald-700 font-medium">Amount to Pay (M-Pesa)</p>
+            <p id="modalValidity" class="text-xs text-slate-500">Valid for 24 Hours</p>
+          </div>
+          <div class="text-right">
+            <p id="modalPrice" class="text-2xl font-extrabold text-emerald-700">KES 50</p>
+            <p id="modalDiscountNote" class="hidden text-[11px] font-bold text-emerald-600">Includes KES 10 Points Discount!</p>
+          </div>
+        </div>
+
+        <div>
+          <label for="recipientPhone" class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1.5">
+            Safaricom Number to Receive Bundle
+          </label>
+          <input
+            type="tel"
+            id="recipientPhone"
+            required
+            placeholder="e.g. 0712 345 678"
+            class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20 outline-none font-semibold text-base"
+          />
+        </div>
+
+        <!-- Dynamic Rider Loyalty & Discount Box -->
+        <div id="checkoutLoyaltyBox" class="hidden rounded-xl border border-amber-200 bg-amber-50/70 p-3.5 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-700">Rider Loyalty Balance:</span>
+            <span id="checkoutPointsBadge" class="text-xs font-extrabold bg-amber-400 text-slate-950 px-2.5 py-0.5 rounded-full">
+              0 pts
+            </span>
+          </div>
+
+          <div id="redeemToggleWrapper" class="hidden pt-2 border-t border-amber-200/80">
+            <label class="flex items-center justify-between cursor-pointer">
+              <div>
+                <span class="block text-xs font-extrabold text-emerald-800">Redeem 50 Points for KES 10 Off</span>
+                <span class="block text-[11px] text-slate-600">Instant M-Pesa discount on this bundle</span>
+              </div>
+              <input type="checkbox" id="redeemPointsCheck" class="w-5 h-5 accent-emerald-600 rounded" />
+            </label>
+          </div>
+
+          <div id="referralInputWrapper" class="hidden pt-2 border-t border-amber-200/80">
+            <label for="referralCodeInput" class="block text-[11px] font-bold uppercase text-slate-600 mb-1">
+              Have a Rider Referral Code? (+15 Bonus Pts)
+            </label>
+            <input
+              type="text"
+              id="referralCodeInput"
+              placeholder="e.g. BBQ-AB7842"
+              class="w-full px-3 py-2 rounded-lg border border-amber-300 bg-white font-mono text-xs font-bold uppercase outline-none focus:border-emerald-600"
+            />
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <input type="checkbox" id="sameNumberCheck" checked class="w-4 h-4 accent-emerald-600 rounded" />
+          <label for="sameNumberCheck" class="text-xs font-medium text-slate-600">
+            Pay using this same M-Pesa number
+          </label>
+        </div>
+
+        <div id="payerPhoneWrapper" class="hidden">
+          <label for="payerPhone" class="block text-xs font-bold uppercase tracking-wide text-slate-600 mb-1.5">
+            M-Pesa Number Paying (STK Prompt)
+          </label>
+          <input
+            type="tel"
+            id="payerPhone"
+            placeholder="e.g. 0798 765 432"
+            class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20 outline-none font-semibold text-base"
+          />
+        </div>
+
+        <div id="formError" class="hidden text-xs font-semibold text-rose-600 bg-rose-50 border border-rose-200 rounded-xl p-3"></div>
+
+        <button
+          type="submit"
+          id="paySubmitBtn"
+          class="w-full py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-extrabold text-base shadow-lg shadow-emerald-600/25 transition flex items-center justify-center gap-2"
+        >
+          <span>Pay via M-Pesa Express</span>
+        </button>
+      </form>
+
+      <!-- STEP 2: Live STK Push & Delivery Polling Status -->
+      <div id="statusView" class="hidden p-6 text-center space-y-4 overflow-y-auto">
+        <div id="statusIcon" class="w-16 h-16 mx-auto rounded-full bg-amber-100 text-amber-600 flex items-center justify-center">
+          <svg class="w-8 h-8 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+          </svg>
+        </div>
+
+        <div>
+          <span id="statusOrderRef" class="text-[11px] font-mono font-bold bg-slate-100 text-slate-600 px-2.5 py-1 rounded">
+            REF: BBQ-000000-0000
+          </span>
+          <h4 id="statusTitle" class="text-lg font-extrabold text-slate-900 mt-2">
+            Check Your Phone for M-Pesa Prompt
+          </h4>
+          <p id="statusDesc" class="text-sm text-slate-600 mt-1">
+            Enter your M-Pesa PIN to authorize payment. Do not close this window while we confirm delivery.
+          </p>
+        </div>
+
+        <div id="receiptBox" class="hidden bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-800 font-semibold"></div>
+
+        <div id="postCheckoutReferralCard" class="hidden bg-slate-900 text-white rounded-xl p-4 text-left space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-bold uppercase text-amber-400">Your Rider Referral Code</span>
+            <span id="postCheckoutPointsText" class="text-[11px] font-bold text-emerald-300">+0 pts on this order</span>
+          </div>
+          <div class="flex items-center justify-between gap-2 bg-white/10 rounded-lg px-3 py-2">
+            <span id="postCheckoutRefCode" class="font-mono font-extrabold text-sm tracking-wider">BBQ-XXXXXX</span>
+            <button
+              type="button"
+              onclick="copyReferralCode(document.getElementById('postCheckoutRefCode').textContent, this)"
+              class="px-2.5 py-1 rounded bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs transition"
+            >
+              Copy
+            </button>
+          </div>
+          <p class="text-[11px] text-slate-300">
+            Share with fellow riders—you earn <strong>+25 bonus points</strong> on their first bundle!
+          </p>
+        </div>
+
+        <button
+          id="statusCloseBtn"
+          onclick="closeCheckoutModal()"
+          class="hidden w-full py-3 rounded-xl bg-slate-900 text-white font-bold text-sm hover:bg-slate-800 transition"
+        >
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MODAL 2: MY ORDERS, LOYALTY POINTS & REFERRAL CODE LOOKUP
+       ====================================================================== -->
+  <div id="lookupModal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-xs p-0 sm:p-4">
+    <div class="bg-white w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh]">
+      <div class="px-5 py-4 bg-slate-900 text-white flex items-center justify-between shrink-0">
+        <div>
+          <h3 class="font-extrabold text-base">My Orders &amp; Rider Rewards</h3>
+          <p class="text-xs text-slate-400">Check loyalty points, referral code &amp; bundle history</p>
+        </div>
+        <button onclick="closeLookupModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white text-lg">
+          &times;
+        </button>
+      </div>
+
+      <form id="lookupForm" class="p-4 border-b border-slate-200 bg-slate-50 shrink-0">
+        <div class="flex gap-2">
+          <input
+            type="text"
+            id="lookupQueryInput"
+            required
+            placeholder="0712345678 or SKG7H89J2K"
+            class="flex-1 px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20 outline-none font-semibold text-sm"
+          />
+          <button
+            type="submit"
+            id="lookupSubmitBtn"
+            class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm transition shrink-0"
+          >
+            Search
+          </button>
+        </div>
+      </form>
+
+      <div id="lookupResultsContainer" class="p-4 overflow-y-auto space-y-3 flex-1">
+        <div class="text-center py-8 text-xs text-slate-400">
+          Enter your Safaricom number (e.g. <strong class="text-slate-600">0712345678</strong>) to view your Loyalty Points, copy your Referral Code, and check recent bundles.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MODAL 3: KENYA DATA PROTECTION ACT (ODPC) PRIVACY POLICY & TERMS
+       ====================================================================== -->
+  <div id="legalModal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-xs p-0 sm:p-4">
+    <div class="bg-white w-full sm:max-w-2xl rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh]">
+      <div class="px-5 py-4 bg-slate-900 text-white flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            id="legalTabPrivacy"
+            onclick="switchLegalTab('PRIVACY')"
+            class="px-3 py-1.5 rounded-lg text-xs font-extrabold bg-emerald-500 text-slate-950 transition"
+          >
+            Privacy Policy (ODPC)
+          </button>
+          <button
+            type="button"
+            id="legalTabTerms"
+            onclick="switchLegalTab('TERMS')"
+            class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white/10 text-slate-200 hover:bg-white/20 transition"
+          >
+            Terms of Service
+          </button>
+        </div>
+        <button type="button" onclick="closeLegalModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white text-lg">
+          &times;
+        </button>
+      </div>
+
+      <!-- Privacy Policy Content -->
+      <div id="legalContentPrivacy" class="p-5 sm:p-6 overflow-y-auto space-y-4 text-xs sm:text-sm text-slate-600 leading-relaxed">
+        <div class="border-b border-slate-200 pb-3">
+          <h3 class="text-base sm:text-lg font-extrabold text-slate-900">Data Protection &amp; Privacy Notice</h3>
+          <p class="text-xs text-slate-400 mt-0.5">Issued in compliance with the Kenya Data Protection Act, 2019 (ODPC) &bull; Effective November 2026</p>
+        </div>
+
+        <div>
+          <h4 class="font-extrabold text-slate-900 mb-1">1. Data Controller Identity</h4>
+          <p><strong>BodaBoda Queen</strong> (operating <strong>bodabodaqueen.co.ke</strong>, Nairobi, Kenya) acts as the Data Controller for personal data collected during bundle purchases, M-Pesa Express checkouts, and rider loyalty participation.</p>
+        </div>
+
+        <div>
+          <h4 class="font-extrabold text-slate-900 mb-1">2. Personal Data We Collect</h4>
+          <ul class="list-disc pl-5 space-y-1">
+            <li><strong>Phone Numbers:</strong> Safaricom recipient and M-Pesa payer MSISDN numbers (`2547XXXXXXXX` / `2541XXXXXXXX`).</li>
+            <li><strong>Payment &amp; Fulfillment Metadata:</strong> M-Pesa receipt numbers, transaction timestamps, bundle SKUs, and delivery confirmation logs.</li>
+            <li><strong>Loyalty &amp; Referral Records:</strong> System-generated referral codes (`BBQ-XXXXXX`), earned/redeemed loyalty points, and network security metadata (IP address for anti-spam rate limiting).</li>
+            <li><strong>What We Never Collect:</strong> We never ask for, view, or store your M-Pesa PIN or national ID number.</li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-extrabold text-slate-900 mb-1">3. Lawful Basis &amp; Purpose of Processing</h4>
+          <p>Under Section 30 of the Data Protection Act, we process your data strictly for <strong>contractual performance</strong> (delivering paid Safaricom bundles and verifying M-Pesa callbacks) and <strong>legitimate security interests</strong> (preventing STK Push spam and resolving failed deliveries). We never sell or rent rider phone numbers to third-party marketers.</p>
+        </div>
+
+        <div>
+          <h4 class="font-extrabold text-slate-900 mb-1">4. Data Sharing &amp; Cross-Border Infrastructure</h4>
+          <p>Data is shared solely with <strong>Safaricom PLC</strong> (via Daraja APIs and USSD fulfillment gateways) to process M-Pesa payments and credit bundles, and hosted on encrypted <strong>Cloudflare</strong> edge infrastructure with strict access controls.</p>
+        </div>
+
+        <div>
+          <h4 class="font-extrabold text-slate-900 mb-1">5. Retention &amp; Your Data Subject Rights</h4>
+          <p>Transaction records are retained for statutory tax and M-Pesa reconciliation purposes. Under Kenyan law, you have the right to access, correct, or request deletion of your loyalty profile by contacting our Data Protection contact via WhatsApp/Phone at <strong>0700 000 000</strong>.</p>
+        </div>
+      </div>
+
+      <!-- Terms of Service Content -->
+      <div id="legalContentTerms" class="hidden p-5 sm:p-6 overflow-y-auto space-y-4 text-xs sm:text-sm text-slate-600 leading-relaxed">
+        <div class="border-b border-slate-200 pb-3">
+          <h3 class="text-base sm:text-lg font-extrabold text-slate-900">Terms of Service</h3>
+          <p class="text-xs text-slate-400 mt-0.5">bodabodaqueen.co.ke &bull; Safaricom Bundle Reseller Terms</p>
+        </div>
+
+        <div>
+          <h4 class="font-extrabold text-slate-900 mb-1">1. Independent Reseller Disclosure</h4>
+          <p><strong>BodaBoda Queen</strong> is an independent digital bundle reseller and is not owned by, endorsed by, or a subsidiary of Safaricom PLC. All bundles are provisioned onto valid Kenyan Safaricom lines.</p>
+        </div>
+
+        <div>
+          <h4 class="font-extrabold text-slate-900 mb-1">2. Accuracy of Recipient Phone Number</h4>
+          <p>Customers are responsible for verifying the recipient Safaricom number before confirming their M-Pesa PIN. Once a bundle is successfully provisioned to a valid Safaricom number entered at checkout, the transaction cannot be reversed.</p>
+        </div>
+
+        <div>
+          <h4 class="font-extrabold text-slate-900 mb-1">3. Delivery Windows &amp; Failed Fulfillments</h4>
+          <p>Most bundles deliver within <strong>5 to 45 seconds</strong> (and up to 2 minutes during peak Safaricom network congestion). If an M-Pesa payment succeeds (`PAID`) but Safaricom rejects bundle provisioning due to line ineligibility or network downtime, contact support with your M-Pesa receipt code for manual re-dispatch or a full M-Pesa refund within 24 hours.</p>
+        </div>
+
+        <div>
+          <h4 class="font-extrabold text-slate-900 mb-1">4. Rider Loyalty Points &amp; Referrals</h4>
+          <p>Loyalty points (`1 pt per KES 10 spent`) and referral bonuses (`+25 pts` referrer / `+15 pts` new rider) have no cash surrender value and are redeemable solely for checkout bundle discounts (`50 pts = KES 10 off`) on bodabodaqueen.co.ke.</p>
+        </div>
+      </div>
+
+      <div class="px-5 py-3.5 bg-slate-50 border-t border-slate-200 flex justify-end shrink-0">
+        <button type="button" onclick="closeLegalModal()" class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating WhatsApp Support Button -->
+  <a
+    id="whatsappSupportBtn"
+    href="https://wa.me/254700000000?text=Hello%20BodaBodaQueen%20Support%2C%20I%20need%20help%20with%20my%20Safaricom%20bundle%20order."
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Chat with Support on WhatsApp"
+    class="fixed bottom-5 right-5 z-40 inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white font-extrabold text-xs px-4 py-3 rounded-full shadow-lg shadow-emerald-900/20 transition transform hover:scale-105"
+  >
+    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824z"/>
+    </svg>
+    <span>WhatsApp Help</span>
+  </a>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Register Service Worker for PWA Home Screen Install
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw.js").catch(() => {});
+      });
+    }
+
+    // Capture Android Chrome 'beforeinstallprompt' event
+    let deferredInstallPrompt = null;
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      const btn = document.getElementById("installAppBtn");
+      btn.classList.remove("hidden");
+      btn.classList.add("inline-flex");
+    });
+
+    async function triggerPwaInstall() {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      const { outcome } = await deferredInstallPrompt.userChoice;
+      if (outcome === "accepted") {
+        document.getElementById("installAppBtn").classList.add("hidden");
+      }
+      deferredInstallPrompt = null;
+    }
+
+    // Capture ?ref=BBQ-XXXXXX from URL and persist in localStorage
+    function initReferralFromUrl() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const urlRef = (params.get("ref") || "").trim().toUpperCase();
+        if (urlRef && /^BBQ-[A-Z0-9]{4,10}$/.test(urlRef)) {
+          localStorage.setItem("bbq_pending_ref", urlRef);
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        renderReferralWelcomeBanner();
+      } catch {}
+    }
+
+    function renderReferralWelcomeBanner() {
+      const savedRef = localStorage.getItem("bbq_pending_ref");
+      const banner = document.getElementById("referralWelcomeBanner");
+      if (savedRef && banner) {
+        document.getElementById("activeRefCodeBadge").textContent = savedRef;
+        banner.classList.remove("hidden");
+      } else if (banner) {
+        banner.classList.add("hidden");
+      }
+    }
+
+    function clearSavedReferralCode() {
+      localStorage.removeItem("bbq_pending_ref");
+      const input = document.getElementById("referralCodeInput");
+      if (input) input.value = "";
+      renderReferralWelcomeBanner();
+    }
+
+    function applySavedReferralToInput() {
+      const savedRef = localStorage.getItem("bbq_pending_ref");
+      const input = document.getElementById("referralCodeInput");
+      if (savedRef && input && !input.value) {
+        input.value = savedRef;
+      }
+    }
+
+    initReferralFromUrl();
+
+    const FALLBACK_PRODUCTS = [
+      { id: 1, category: "COMBO", name: "Boda Rider Daily Pack", description: "500MB Data + 30 Mins + 100 SMS (24 Hrs)", validity_label: "24 Hours", selling_price: 55, is_featured: 1 },
+      { id: 2, category: "DATA", name: "250MB Daily Data", description: "Fast 4G/5G browsing valid for 24 hours", validity_label: "24 Hours", selling_price: 20, is_featured: 0 },
+      { id: 3, category: "DATA", name: "1GB Hourly Data", description: "1GB high-speed data valid for 1 hour", validity_label: "1 Hour", selling_price: 19, is_featured: 1 },
+      { id: 4, category: "DATA", name: "1.5GB Daily Bundle", description: "1.5GB data valid for 24 hours", validity_label: "24 Hours", selling_price: 50, is_featured: 1 },
+      { id: 5, category: "SMS", name: "200 Daily SMS", description: "200 SMS to all networks for 24 hours", validity_label: "24 Hours", selling_price: 10, is_featured: 0 },
+      { id: 6, category: "SMS", name: "1,000 Weekly SMS", description: "1,000 SMS to all networks for 7 days", validity_label: "7 Days", selling_price: 30, is_featured: 1 },
+      { id: 7, category: "VOICE", name: "45 Mins Daily Talktime", description: "45 minutes all-network calls for 24 hours", validity_label: "24 Hours", selling_price: 50, is_featured: 1 }
+    ];
+
+    let allProducts = [];
+    let selectedCategory = "ALL";
+    let selectedProduct = null;
+    let currentRiderProfile = null;
+    let pollTimer = null;
+    let phoneLookupDebounce = null;
+
+    // 1. Load Products from /api/products
+    async function loadProducts() {
+      const loadingGrid = document.getElementById("loadingGrid");
+      const productsGrid = document.getElementById("productsGrid");
+      const catalogNotice = document.getElementById("catalogNotice");
+
+      loadingGrid.classList.remove("hidden");
+      productsGrid.classList.add("hidden");
+      catalogNotice.classList.add("hidden");
+
+      try {
+        const res = await fetch("/api/products");
+        if (!res.ok) throw new Error("API unavailable");
+        const data = await res.json();
+        allProducts = Array.isArray(data.products) ? data.products : data;
+      } catch (err) {
+        allProducts = FALLBACK_PRODUCTS;
+      }
+
+      loadingGrid.classList.add("hidden");
+      renderProducts();
+      initRepeatOrderBanner();
+    }
+
+    // 2. Render 1-Tap Repeat Last Bundle Banner if Returning Rider Found
+    function initRepeatOrderBanner() {
+      try {
+        const rawSaved = localStorage.getItem("bbq_last_order");
+        if (!rawSaved) return;
+        const saved = JSON.parse(rawSaved);
+        if (!saved || !saved.product_id || !saved.recipient_phone) return;
+
+        const liveProduct = allProducts.find((p) => Number(p.id) === Number(saved.product_id));
+        if (!liveProduct) return;
+
+        document.getElementById("repeatPhoneLabel").textContent = saved.recipient_phone;
+        document.getElementById("repeatBundleTitle").textContent = liveProduct.name;
+        document.getElementById("repeatBundleMeta").textContent = `Valid ${liveProduct.validity_label} • KES ${Number(liveProduct.selling_price).toLocaleString()}`;
+        document.getElementById("repeatOrderBanner").classList.remove("hidden");
+      } catch {}
+    }
+
+    function triggerQuickRepeat() {
+      try {
+        const saved = JSON.parse(localStorage.getItem("bbq_last_order") || "{}");
+        const liveProduct = allProducts.find((p) => Number(p.id) === Number(saved.product_id));
+        if (!liveProduct) return;
+
+        openCheckoutModal(liveProduct);
+        document.getElementById("recipientPhone").value = saved.recipient_phone || "";
+        document.getElementById("recipientPhone").dispatchEvent(new Event("input"));
+
+        if (saved.payer_phone && saved.payer_phone !== saved.recipient_phone) {
+          document.getElementById("sameNumberCheck").checked = false;
+          document.getElementById("sameNumberCheck").dispatchEvent(new Event("change"));
+          document.getElementById("payerPhone").value = saved.payer_phone;
+        }
+      } catch {}
+    }
+
+    function dismissRepeatBanner() {
+      document.getElementById("repeatOrderBanner").classList.add("hidden");
+    }
+
+    // 3. Render Filtered Bundle Cards
+    function renderProducts() {
+      const grid = document.getElementById("productsGrid");
+      const notice = document.getElementById("catalogNotice");
+
+      const filtered = selectedCategory === "ALL"
+        ? allProducts
+        : allProducts.filter((p) => p.category === selectedCategory);
+
+      if (!filtered.length) {
+        grid.classList.add("hidden");
+        notice.classList.remove("hidden");
+        document.getElementById("catalogNoticeText").textContent = "No bundles available in this category right now.";
+        return;
+      }
+
+      notice.classList.add("hidden");
+      grid.classList.remove("hidden");
+
+      const badgeStyles = {
+        DATA: "bg-sky-50 text-sky-700 border-sky-200",
+        SMS: "bg-purple-50 text-purple-700 border-purple-200",
+        VOICE: "bg-amber-50 text-amber-700 border-amber-200",
+        COMBO: "bg-emerald-50 text-emerald-700 border-emerald-200"
+      };
+
+      grid.innerHTML = filtered.map((product) => {
+        const badgeClass = badgeStyles[product.category] || "bg-slate-100 text-slate-700 border-slate-200";
+        const popularTag = product.is_featured
+          ? `<span class="text-[10px] font-extrabold uppercase tracking-wider bg-amber-400 text-slate-950 px-2 py-0.5 rounded-full">Popular</span>`
+          : "";
+
+        return `
+          <div class="bg-white rounded-2xl border border-slate-200 hover:border-emerald-500 hover:shadow-md transition p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-3">
+                <span class="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md border ${badgeClass}">
+                  ${product.category}
+                </span>
+                ${popularTag}
+              </div>
+              <h3 class="text-lg font-extrabold text-slate-900 leading-snug">${escapeHtml(product.name)}</h3>
+              <p class="text-xs text-slate-500 mt-1 line-clamp-2">${escapeHtml(product.description || "")}</p>
+            </div>
+
+            <div class="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between">
+              <div>
+                <span class="block text-[11px] font-medium text-slate-400">Valid ${escapeHtml(product.validity_label)}</span>
+                <span class="text-xl font-extrabold text-slate-900">KES ${Number(product.selling_price).toLocaleString()}</span>
+              </div>
+              <button
+                onclick='openCheckoutModal(${JSON.stringify(product).replace(/'/g, "&#39;")})'
+                class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-sm font-bold shadow-xs transition"
+              >
+                Buy Now
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    // 4. Category Tab Switching
+    document.getElementById("categoryTabs").addEventListener("click", (e) => {
+      const btn = e.target.closest(".tab-btn");
+      if (!btn) return;
+
+      selectedCategory = btn.dataset.category;
+      document.querySelectorAll(".tab-btn").forEach((el) => {
+        el.classList.remove("bg-emerald-600", "text-white", "font-bold", "shadow-sm");
+        el.classList.add("bg-white", "text-slate-700", "font-semibold", "border", "border-slate-200");
+      });
+
+      btn.classList.remove("bg-white", "text-slate-700", "font-semibold", "border", "border-slate-200");
+      btn.classList.add("bg-emerald-600", "text-white", "font-bold", "shadow-sm");
+
+      renderProducts();
+    });
+
+    // 5. Toggle Separate Payer Phone Input
+    document.getElementById("sameNumberCheck").addEventListener("change", (e) => {
+      const wrapper = document.getElementById("payerPhoneWrapper");
+      const payerInput = document.getElementById("payerPhone");
+      if (e.target.checked) {
+        wrapper.classList.add("hidden");
+        payerInput.required = false;
+      } else {
+        wrapper.classList.remove("hidden");
+        payerInput.required = true;
+      }
+    });
+
+    // 6. Auto-check Rider Loyalty Points when typing recipient phone
+    document.getElementById("recipientPhone").addEventListener("input", (e) => {
+      clearTimeout(phoneLookupDebounce);
+      const raw = e.target.value.replace(/\D/g, "");
+      if (raw.length < 9) {
+        document.getElementById("checkoutLoyaltyBox").classList.add("hidden");
+        currentRiderProfile = null;
+        updateDisplayedCheckoutPrice();
+        return;
+      }
+
+      phoneLookupDebounce = setTimeout(async () => {
+        try {
+          const res = await fetch(`/api/order-history?q=${encodeURIComponent(raw)}`);
+          const data = await res.json();
+          if (res.ok && data.success && data.rider) {
+            currentRiderProfile = data.rider;
+            renderCheckoutLoyaltyBox(data.rider);
+          }
+        } catch {}
+      }, 450);
+    });
+
+    function renderCheckoutLoyaltyBox(rider) {
+      const box = document.getElementById("checkoutLoyaltyBox");
+      const ptsBadge = document.getElementById("checkoutPointsBadge");
+      const redeemWrapper = document.getElementById("redeemToggleWrapper");
+      const redeemCheck = document.getElementById("redeemPointsCheck");
+      const refWrapper = document.getElementById("referralInputWrapper");
+
+      box.classList.remove("hidden");
+      ptsBadge.textContent = `${Number(rider.loyalty_points || 0).toLocaleString()} pts`;
+
+      const basePrice = selectedProduct ? Math.ceil(Number(selectedProduct.selling_price)) : 0;
+      if (rider.can_redeem_discount && basePrice >= 20) {
+        redeemWrapper.classList.remove("hidden");
+      } else {
+        redeemWrapper.classList.add("hidden");
+        redeemCheck.checked = false;
+      }
+
+      if (rider.can_apply_referral) {
+        refWrapper.classList.remove("hidden");
+        applySavedReferralToInput();
+      } else {
+        refWrapper.classList.add("hidden");
+      }
+
+      updateDisplayedCheckoutPrice();
+    }
+
+    document.getElementById("redeemPointsCheck").addEventListener("change", updateDisplayedCheckoutPrice);
+
+    function updateDisplayedCheckoutPrice() {
+      if (!selectedProduct) return;
+      const basePrice = Math.ceil(Number(selectedProduct.selling_price));
+      const redeemChecked = document.getElementById("redeemPointsCheck").checked;
+      const discountNote = document.getElementById("modalDiscountNote");
+      const priceEl = document.getElementById("modalPrice");
+
+      if (redeemChecked && currentRiderProfile?.can_redeem_discount && basePrice >= 20) {
+        const discounted = Math.max(basePrice - 10, 10);
+        priceEl.textContent = `KES ${discounted.toLocaleString()}`;
+        discountNote.classList.remove("hidden");
+      } else {
+        priceEl.textContent = `KES ${basePrice.toLocaleString()}`;
+        discountNote.classList.add("hidden");
+      }
+    }
+
+    // 7. Checkout Modal Open & Close
+    function openCheckoutModal(product) {
+      selectedProduct = product;
+      clearInterval(pollTimer);
+
+      document.getElementById("modalCategoryBadge").textContent = product.category;
+      document.getElementById("modalBundleName").textContent = product.name;
+      document.getElementById("modalValidity").textContent = `Valid for ${product.validity_label}`;
+      document.getElementById("redeemPointsCheck").checked = false;
+      updateDisplayedCheckoutPrice();
+
+      document.getElementById("checkoutForm").classList.remove("hidden");
+      document.getElementById("statusView").classList.add("hidden");
+      document.getElementById("formError").classList.add("hidden");
+      document.getElementById("postCheckoutReferralCard").classList.add("hidden");
+
+      applySavedReferralToInput();
+
+      const savedPhone = localStorage.getItem("bbq_rider_phone");
+      if (savedPhone && !document.getElementById("recipientPhone").value) {
+        document.getElementById("recipientPhone").value = savedPhone;
+        document.getElementById("recipientPhone").dispatchEvent(new Event("input"));
+      }
+
+      const modal = document.getElementById("checkoutModal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      document.getElementById("recipientPhone").focus();
+    }
+
+    function closeCheckoutModal() {
+      clearInterval(pollTimer);
+      const modal = document.getElementById("checkoutModal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    // 8. Submit Checkout & Save Last Order for 1-Tap Repeat
+    document.getElementById("checkoutForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!selectedProduct) return;
+
+      const submitBtn = document.getElementById("paySubmitBtn");
+      const errorBox = document.getElementById("formError");
+      const recipientPhone = document.getElementById("recipientPhone").value.trim();
+      const sameNumber = document.getElementById("sameNumberCheck").checked;
+      const payerPhone = sameNumber ? recipientPhone : document.getElementById("payerPhone").value.trim();
+      const redeemPoints = document.getElementById("redeemPointsCheck").checked;
+      const referralCode = document.getElementById("referralCodeInput").value.trim();
+
+      localStorage.setItem("bbq_rider_phone", recipientPhone);
+      localStorage.setItem(
+        "bbq_last_order",
+        JSON.stringify({
+          product_id: selectedProduct.id,
+          recipient_phone: recipientPhone,
+          payer_phone: payerPhone
+        })
+      );
+      initRepeatOrderBanner();
+
+      errorBox.classList.add("hidden");
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<span>Sending M-Pesa Prompt...</span>`;
+
+      try {
+        const res = await fetch("/api/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            product_id: selectedProduct.id,
+            recipient_phone: recipientPhone,
+            payer_phone: payerPhone,
+            redeem_points: redeemPoints,
+            referral_code: referralCode || null
+          })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || !data.success) {
+          throw new Error(data.error || "Could not initiate M-Pesa STK Push.");
+        }
+
+        const waBtn = document.getElementById("whatsappSupportBtn");
+        waBtn.href = `https://wa.me/254700000000?text=${encodeURIComponent(`Hello BodaBodaQueen Support, I need help with my order ${data.order_reference} (${recipientPhone}).`)}`;
+
+        if (data.rider_referral_code) {
+          document.getElementById("postCheckoutRefCode").textContent = data.rider_referral_code;
+          document.getElementById("postCheckoutPointsText").textContent = `+${data.points_to_earn || 0} pts on payment`;
+          document.getElementById("postCheckoutReferralCard").classList.remove("hidden");
+        }
+
+        showLivePollingView(data.order_reference);
+        startOrderPolling(data.order_reference);
+      } catch (err) {
+        errorBox.textContent = err.message;
+        errorBox.classList.remove("hidden");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<span>Pay via M-Pesa Express</span>`;
+      }
+    });
+
+    // 9. Live Order & M-Pesa Status Polling
+    function showLivePollingView(orderRef) {
+      document.getElementById("checkoutForm").classList.add("hidden");
+      document.getElementById("statusView").classList.remove("hidden");
+      document.getElementById("receiptBox").classList.add("hidden");
+      document.getElementById("statusCloseBtn").classList.add("hidden");
+
+      document.getElementById("statusOrderRef").textContent = `REF: ${orderRef}`;
+      document.getElementById("statusTitle").textContent = "Check Your Phone for M-Pesa Prompt";
+      document.getElementById("statusDesc").textContent = "Enter your M-Pesa PIN to complete payment. Waiting for Safaricom confirmation...";
+      document.getElementById("statusIcon").className = "w-16 h-16 mx-auto rounded-full bg-amber-100 text-amber-600 flex items-center justify-center";
+      document.getElementById("statusIcon").innerHTML = `
+        <svg class="w-8 h-8 animate-spin" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+        </svg>
+      `;
+    }
+
+    function startOrderPolling(orderRef) {
+      let attempts = 0;
+      const maxAttempts = 24;
+
+      pollTimer = setInterval(async () => {
+        attempts++;
+        try {
+          const res = await fetch(`/api/order-status?ref=${encodeURIComponent(orderRef)}`);
+          if (!res.ok) return;
+          const order = await res.json();
+
+          if (order.payment_status === "FAILED") {
+            clearInterval(pollTimer);
+            renderFinalStatus(
+              false,
+              "M-Pesa Payment Failed",
+              order.failure_reason || "The transaction was cancelled or timed out. Please try again."
+            );
+          } else if (order.payment_status === "PAID" && order.fulfillment_status === "DELIVERED") {
+            clearInterval(pollTimer);
+            localStorage.removeItem("bbq_pending_ref");
+            renderReferralWelcomeBanner();
+            renderFinalStatus(
+              true,
+              "Bundle Delivered!",
+              `Your ${selectedProduct.name} has been sent to ${order.recipient_phone}.`,
+              order.mpesa_receipt_number
+            );
+          } else if (order.payment_status === "PAID" && order.fulfillment_status === "PROCESSING") {
+            localStorage.removeItem("bbq_pending_ref");
+            renderReferralWelcomeBanner();
+            document.getElementById("statusTitle").textContent = "Payment Confirmed! Sending Bundle...";
+            document.getElementById("statusDesc").textContent = "M-Pesa payment received. Activating your Safaricom bundle now...";
+          }
+        } catch (e) {}
+
+        if (attempts >= maxAttempts) {
+          clearInterval(pollTimer);
+          renderFinalStatus(
+            false,
+            "Still Waiting on Safaricom",
+            `If you already entered your PIN, your bundle will arrive shortly. Save your reference (${orderRef}) or check "My Orders & Points" anytime.`
+          );
+        }
+      }, 3000);
+    }
+
+    function renderFinalStatus(isSuccess, title, desc, receipt = null) {
+      const icon = document.getElementById("statusIcon");
+      const receiptBox = document.getElementById("receiptBox");
+      const closeBtn = document.getElementById("statusCloseBtn");
+
+      document.getElementById("statusTitle").textContent = title;
+      document.getElementById("statusDesc").textContent = desc;
+      closeBtn.classList.remove("hidden");
+
+      if (isSuccess) {
+        icon.className = "w-16 h-16 mx-auto rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center";
+        icon.innerHTML = `<svg class="w-9 h-9" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`;
+        if (receipt) {
+          receiptBox.textContent = `M-Pesa Receipt: ${receipt}`;
+          receiptBox.classList.remove("hidden");
+        }
+      } else {
+        icon.className = "w-16 h-16 mx-auto rounded-full bg-rose-100 text-rose-600 flex items-center justify-center";
+        icon.innerHTML = `<svg class="w-9 h-9" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>`;
+      }
+    }
+
+    // 10. My Orders & Loyalty Points Lookup Modal Logic
+    function openLookupModal() {
+      const modal = document.getElementById("lookupModal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+
+      const savedPhone = localStorage.getItem("bbq_rider_phone");
+      const input = document.getElementById("lookupQueryInput");
+      if (savedPhone && !input.value) {
+        input.value = savedPhone;
+        document.getElementById("lookupForm").dispatchEvent(new Event("submit"));
+      } else {
+        input.focus();
+      }
+    }
+
+    function closeLookupModal() {
+      const modal = document.getElementById("lookupModal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    document.getElementById("lookupForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const query = document.getElementById("lookupQueryInput").value.trim();
+      const container = document.getElementById("lookupResultsContainer");
+      const btn = document.getElementById("lookupSubmitBtn");
+
+      if (!query) return;
+
+      btn.disabled = true;
+      btn.textContent = "Searching...";
+      container.innerHTML = `<div class="text-center py-8 text-xs text-slate-400">Loading rider rewards &amp; orders...</div>`;
+
+      try {
+        const res = await fetch(`/api/order-history?q=${encodeURIComponent(query)}`);
+        const data = await res.json();
+
+        if (!res.ok || !data.success) {
+          container.innerHTML = `<div class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700">${escapeHtml(data.error || "Search failed.")}</div>`;
+          return;
+        }
+
+        let html = "";
+
+        if (data.rider) {
+          const r = data.rider;
+          const pts = Number(r.loyalty_points || 0);
+          const refParam = r.referral_code ? `?ref=${encodeURIComponent(r.referral_code)}` : "";
+          const shareText = encodeURIComponent(
+            `Ride & save on Safaricom Data, SMS & Minutes! Tap my link to buy instant bundles at https://bodabodaqueen.co.ke/${refParam} and get +15 bonus loyalty points automatically!`
+          );
+
+          html += `
+            <div class="rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 text-white p-4 space-y-3 shadow-sm">
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Boda Rider Rewards</span>
+                  <p class="text-xs text-slate-300 font-mono">${escapeHtml(r.phone_number)}</p>
+                </div>
+                <div class="text-right">
+                  <span class="text-2xl font-extrabold text-amber-400">${pts.toLocaleString()}</span>
+                  <span class="block text-[10px] uppercase font-bold text-slate-400">Loyalty Points</span>
+                </div>
+              </div>
+
+              <div class="text-[11px] text-slate-300 bg-white/5 rounded-lg px-3 py-2">
+                ${pts >= 50
+                  ? `🎉 You have <strong>${pts} points</strong>! Toggle <strong>"Redeem 50 Points for KES 10 Off"</strong> when buying your next bundle.`
+                  : `Earn <strong>${50 - pts} more points</strong> (1 pt per KES 10 spent) to unlock <strong>KES 10 off</strong> your next bundle!`}
+              </div>
+
+              ${r.referral_code ? `
+                <div class="pt-1 space-y-1.5">
+                  <div class="flex items-center justify-between gap-2 bg-white/10 rounded-xl px-3 py-2">
+                    <div>
+                      <span class="block text-[10px] uppercase text-slate-400 font-bold">Your Referral Code</span>
+                      <span class="font-mono font-extrabold text-sm text-white">${escapeHtml(r.referral_code)}</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onclick="copyReferralCode('${escapeHtml(r.referral_code)}', this)"
+                        class="px-3 py-1.5 rounded-lg bg-white text-slate-900 hover:bg-slate-100 font-extrabold text-xs transition"
+                      >
+                        Copy
+                      </button>
+                      <a
+                        href="https://wa.me/?text=${shareText}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="px-3 py-1.5 rounded-lg bg-[#25D366] hover:bg-[#20bd5a] text-white font-extrabold text-xs transition"
+                      >
+                        Share
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              ` : ""}
+            </div>
+          `;
+        }
+
+        if (!data.orders || data.orders.length === 0) {
+          html += `
+            <div class="text-center py-6 px-4 bg-slate-50 rounded-xl border border-slate-200">
+              <p class="text-sm font-bold text-slate-700">No bundle orders yet</p>
+              <p class="text-xs text-slate-500 mt-1">Buy your first Safaricom bundle to start earning loyalty points!</p>
+            </div>
+          `;
+          container.innerHTML = html;
+          return;
+        }
+
+        html += data.orders.map((o) => {
+          const isDelivered = o.fulfillment_status === "DELIVERED";
+          const isFailed = o.payment_status === "FAILED" || o.fulfillment_status === "FAILED";
+
+          const statusBadge = isDelivered
+            ? `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Delivered</span>`
+            : isFailed
+            ? `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200">Failed</span>`
+            : `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">Processing</span>`;
+
+          return `
+            <div class="p-4 rounded-xl border border-slate-200 bg-white space-y-2">
+              <div class="flex items-start justify-between gap-2">
+                <div>
+                  <span class="text-[10px] font-mono font-bold text-slate-400">${escapeHtml(o.order_reference)}</span>
+                  <h4 class="font-extrabold text-sm text-slate-900">${escapeHtml(o.product_name)}</h4>
+                </div>
+                ${statusBadge}
+              </div>
+
+              <div class="flex items-center justify-between text-xs text-slate-600 pt-1 border-t border-slate-100">
+                <span>Recipient: <strong class="text-slate-900">${escapeHtml(o.recipient_phone)}</strong></span>
+                <div class="text-right">
+                  <span class="font-extrabold text-slate-900">KES ${Number(o.amount_kes).toLocaleString()}</span>
+                  ${Number(o.points_earned) > 0 && o.payment_status === "PAID" ? `<span class="block text-[10px] font-bold text-amber-600">+${o.points_earned} pts earned</span>` : ""}
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between text-[11px] text-slate-400">
+                <span>${escapeHtml(o.created_at_eat)}</span>
+                ${o.mpesa_receipt_number ? `<span class="font-mono font-bold text-emerald-700">M-Pesa: ${escapeHtml(o.mpesa_receipt_number)}</span>` : ""}
+              </div>
+
+              ${o.failure_reason ? `<p class="text-[11px] text-rose-600 bg-rose-50 px-2.5 py-1.5 rounded-lg">${escapeHtml(o.failure_reason)}</p>` : ""}
+            </div>
+          `;
+        }).join("");
+
+        container.innerHTML = html;
+      } catch (err) {
+        container.innerHTML = `<div class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700">Network error searching orders. Please try again.</div>`;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Search";
+      }
+    });
+
+    async function copyReferralCode(code, btnEl) {
+      try {
+        await navigator.clipboard.writeText(code);
+        const orig = btnEl.textContent;
+        btnEl.textContent = "Copied!";
+        setTimeout(() => { btnEl.textContent = orig; }, 2000);
+      } catch {
+        prompt("Copy your referral code:", code);
+      }
+    }
+
+    // 11. ODPC Privacy Policy & Terms of Service Modal Logic
+    function openLegalModal(tab = "PRIVACY") {
+      switchLegalTab(tab);
+      const modal = document.getElementById("legalModal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    }
+
+    function closeLegalModal() {
+      const modal = document.getElementById("legalModal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    function switchLegalTab(tab) {
+      const privacyContent = document.getElementById("legalContentPrivacy");
+      const termsContent = document.getElementById("legalContentTerms");
+      const privacyBtn = document.getElementById("legalTabPrivacy");
+      const termsBtn = document.getElementById("legalTabTerms");
+
+      if (tab === "TERMS") {
+        privacyContent.classList.add("hidden");
+        termsContent.classList.remove("hidden");
+        termsBtn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold bg-emerald-500 text-slate-950 transition";
+        privacyBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-white/10 text-slate-200 hover:bg-white/20 transition";
+      } else {
+        termsContent.classList.add("hidden");
+        privacyContent.classList.remove("hidden");
+        privacyBtn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold bg-emerald-500 text-slate-950 transition";
+        termsBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-white/10 text-slate-200 hover:bg-white/20 transition";
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    loadProducts();
+  </script>
+</body>
+</html>
