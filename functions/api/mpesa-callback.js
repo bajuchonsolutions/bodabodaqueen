@@ -2,12 +2,16 @@ export async function onRequestPost(context) {
   const { request, env } = context;
 
   try {
-    if (env.MPESA_CALLBACK_SECRET) {
-      const url = new URL(request.url);
-      const providedToken = url.searchParams.get("token");
-      if (!providedToken || providedToken !== env.MPESA_CALLBACK_SECRET) {
-        return jsonResponse({ ResultCode: 1, ResultDesc: "Unauthorized callback token" }, 401);
-      }
+    // Never accept callbacks when the shared secret is missing.
+    // This token is an access gate, not independent proof of settlement.
+    if (!env.MPESA_CALLBACK_SECRET || typeof env.MPESA_CALLBACK_SECRET !== "string") {
+      console.error("M-Pesa callback authentication is not configured");
+      return jsonResponse({ ResultCode: 1, ResultDesc: "Callback unavailable" }, 503);
+    }
+    const url = new URL(request.url);
+    const providedToken = url.searchParams.get("token");
+    if (!providedToken || !constantTimeEqual(providedToken, env.MPESA_CALLBACK_SECRET)) {
+      return jsonResponse({ ResultCode: 1, ResultDesc: "Unauthorized callback token" }, 401);
     }
 
     const payload = await request.json();
@@ -187,4 +191,16 @@ function jsonResponse(payload, status = 200) {
     status,
     headers: { "Content-Type": "application/json" }
   });
+}
+
+function constantTimeEqual(a, b) {
+  const encoder = new TextEncoder();
+  const left = encoder.encode(a);
+  const right = encoder.encode(b);
+  let difference = left.length ^ right.length;
+  const size = Math.max(left.length, right.length);
+  for (let i = 0; i < size; i++) {
+    difference |= (left[i] ?? 0) ^ (right[i] ?? 0);
+  }
+  return difference === 0;
 }
