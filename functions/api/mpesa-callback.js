@@ -100,19 +100,13 @@ export async function onRequestPost(context) {
       ];
 
       if (txRecord.customer_id) {
-        const netPoints = Number(txRecord.points_earned || 0) - Number(txRecord.points_redeemed || 0);
+        // Loyalty balances are updated only by the unique ledger-entry trigger.
+        // Replayed callbacks cannot award the same event twice.
         statements.push(
           env.DB.prepare(
-            `UPDATE customers
-             SET loyalty_points = MAX(0, loyalty_points + ?1),
-                 total_orders_count = total_orders_count + 1,
-                 updated_at = datetime('now')
-             WHERE id = ?2`
-          ).bind(netPoints, txRecord.customer_id),
-
-          env.DB.prepare(
-            `INSERT INTO loyalty_ledger (customer_id, order_id, entry_type, points_delta, description)
-             VALUES (?1, ?2, 'EARN_PURCHASE', ?3, ?4)`
+            `INSERT OR IGNORE INTO loyalty_ledger (customer_id, order_id, entry_type, points_delta, description)
+             SELECT ?1, ?2, 'EARN_PURCHASE', ?3, ?4
+             WHERE EXISTS (SELECT 1 FROM orders WHERE id = ?2 AND payment_status = 'PAID')`
           ).bind(
             txRecord.customer_id,
             txRecord.order_id,
@@ -124,8 +118,9 @@ export async function onRequestPost(context) {
         if (Number(txRecord.points_redeemed || 0) > 0) {
           statements.push(
             env.DB.prepare(
-              `INSERT INTO loyalty_ledger (customer_id, order_id, entry_type, points_delta, description)
-               VALUES (?1, ?2, 'REDEEM_DISCOUNT', ?3, ?4)`
+              `INSERT OR IGNORE INTO loyalty_ledger (customer_id, order_id, entry_type, points_delta, description)
+               SELECT ?1, ?2, 'REDEEM_DISCOUNT', ?3, ?4
+               WHERE EXISTS (SELECT 1 FROM orders WHERE id = ?2 AND payment_status = 'PAID')`
             ).bind(
               txRecord.customer_id,
               txRecord.order_id,
@@ -143,18 +138,14 @@ export async function onRequestPost(context) {
           if (referrer) {
             statements.push(
               env.DB.prepare(
-                `UPDATE customers SET loyalty_points = loyalty_points + 25, updated_at = datetime('now') WHERE id = ?1`
-              ).bind(referrer.id),
-              env.DB.prepare(
-                `INSERT INTO loyalty_ledger (customer_id, order_id, entry_type, points_delta, description)
-                 VALUES (?1, ?2, 'REFERRAL_BONUS', 25, ?3)`
+                `INSERT OR IGNORE INTO loyalty_ledger (customer_id, order_id, entry_type, points_delta, description)
+                 SELECT ?1, ?2, 'REFERRAL_BONUS', 25, ?3
+                 WHERE EXISTS (SELECT 1 FROM orders WHERE id = ?2 AND payment_status = 'PAID')`
               ).bind(referrer.id, txRecord.order_id, `Referral bonus from ${txRecord.recipient_phone}`),
               env.DB.prepare(
-                `UPDATE customers SET loyalty_points = loyalty_points + 15, updated_at = datetime('now') WHERE id = ?1`
-              ).bind(txRecord.customer_id),
-              env.DB.prepare(
-                `INSERT INTO loyalty_ledger (customer_id, order_id, entry_type, points_delta, description)
-                 VALUES (?1, ?2, 'REFERRAL_BONUS', 15, ?3)`
+                `INSERT OR IGNORE INTO loyalty_ledger (customer_id, order_id, entry_type, points_delta, description)
+                 SELECT ?1, ?2, 'REFERRAL_BONUS', 15, ?3
+                 WHERE EXISTS (SELECT 1 FROM orders WHERE id = ?2 AND payment_status = 'PAID')`
               ).bind(txRecord.customer_id, txRecord.order_id, `Welcome bonus using code ${txRecord.applied_referral_code}`)
             );
           }
