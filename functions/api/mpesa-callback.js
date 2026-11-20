@@ -173,7 +173,9 @@ export async function onRequestPost(context) {
     return jsonResponse({ ResultCode: 0, ResultDesc: "Callback accepted" });
   } catch (err) {
     console.error("M-Pesa Callback Error:", err);
-    return jsonResponse({ ResultCode: 0, ResultDesc: "Handled error" });
+    // Do not acknowledge an unprocessed callback as successful.
+    // The provider may retry, while the unique ledger index protects replay.
+    return jsonResponse({ ResultCode: 1, ResultDesc: "Callback processing failed" }, 503);
   }
 }
 
