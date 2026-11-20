@@ -1,0 +1,35 @@
+name: Verify BodaBoda Queen
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Check JavaScript syntax
+        run: |
+          set -e
+          for file in functions/api/*.js sw.js; do
+            node --input-type=module --check < "$file"
+          done
+      - name: Verify payment and fulfillment rules
+        run: node --disable-warning=ExperimentalWarning --test tests/*.test.mjs
+
+  fleetbase-compatibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check Redis adapter
+        run: php tests/fleetbase/tests/test_redis_adapter.php
+      - name: Run disposable MySQL and Redis fixture
+        run: bash tests/fleetbase/scripts/run-local-compat.sh

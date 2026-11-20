@@ -1,6 +1,12 @@
 export async function onRequestPost(context) {
   const { request, env } = context;
 
+  const callbackUrl = URL.parse(env.MPESA_CALLBACK_URL || "");
+  if (!env.MPESA_CALLBACK_SECRET?.trim() || callbackUrl?.protocol !== "https:" ||
+      callbackUrl.searchParams.get("token") !== env.MPESA_CALLBACK_SECRET) {
+    return jsonResponse({ success: false, error: "Payment is temporarily unavailable." }, 503);
+  }
+
   try {
     try {
       const storeState = await env.DB.prepare(
@@ -185,7 +191,7 @@ export async function onRequestPost(context) {
       PartyA: normalizedPayer,
       PartyB: env.MPESA_TILL_OR_ACCOUNT || env.MPESA_SHORTCODE,
       PhoneNumber: normalizedPayer,
-      CallBackURL: env.MPESA_CALLBACK_URL,
+      CallBackURL: callbackUrl.href,
       AccountReference: orderReference,
       TransactionDesc: `BodaBodaQueen ${product.sku}`
     };

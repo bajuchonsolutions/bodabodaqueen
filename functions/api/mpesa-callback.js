@@ -2,12 +2,12 @@ export async function onRequestPost(context) {
   const { request, env } = context;
 
   try {
-    if (env.MPESA_CALLBACK_SECRET) {
-      const url = new URL(request.url);
-      const providedToken = url.searchParams.get("token");
-      if (!providedToken || providedToken !== env.MPESA_CALLBACK_SECRET) {
-        return jsonResponse({ ResultCode: 1, ResultDesc: "Unauthorized callback token" }, 401);
-      }
+    if (!env.MPESA_CALLBACK_SECRET?.trim()) {
+      return jsonResponse({ ResultCode: 1, ResultDesc: "Callback unavailable" }, 503);
+    }
+    const token = new URL(request.url).searchParams.get("token");
+    if (token !== env.MPESA_CALLBACK_SECRET) {
+      return jsonResponse({ ResultCode: 1, ResultDesc: "Unauthorized callback" }, 401);
     }
 
     const payload = await request.json();
@@ -19,6 +19,9 @@ export async function onRequestPost(context) {
 
     const checkoutRequestId = stkCallback.CheckoutRequestID;
     const resultCode = Number(stkCallback.ResultCode);
+    if (stkCallback.ResultCode == null || !Number.isInteger(resultCode)) {
+      return jsonResponse({ ResultCode: 1, ResultDesc: "Invalid result code" }, 400);
+    }
     const resultDesc = stkCallback.ResultDesc || "";
 
     const txRecord = await env.DB.prepare(
@@ -37,7 +40,7 @@ export async function onRequestPost(context) {
        FROM mpesa_transactions mt
        JOIN orders o ON o.id = mt.order_id
        JOIN products p ON p.id = o.product_id
-       WHERE mt.checkout_request_id = ?1`
+       WHERE mt.checkout_request_id = ?`
     )
       .bind(checkoutRequestId)
       .first();
@@ -59,40 +62,21 @@ export async function onRequestPost(context) {
       const expectedAmount = Number(txRecord.amount_kes || 0);
       const txDate = getMeta("TransactionDate") ? String(getMeta("TransactionDate")) : null;
 
-      if (paidAmount + 0.01 < expectedAmount) {
-        const mismatchReason = `Amount mismatch: paid KES ${paidAmount}, expected KES ${expectedAmount}`;
-        await env.DB.batch([
-          env.DB.prepare(
-            `UPDATE mpesa_transactions
-             SET mpesa_receipt_number = ?1, transaction_date = ?2, result_code = 0,
-                 result_desc = ?3, raw_callback_json = ?4, updated_at = datetime('now')
-             WHERE id = ?5`
-          ).bind(receiptNumber, txDate, mismatchReason, JSON.stringify(payload), txRecord.mpesa_tx_id),
-
-          env.DB.prepare(
-            `UPDATE orders
-             SET payment_status = 'FAILED', fulfillment_status = 'FAILED',
-                 failure_reason = ?1, updated_at = datetime('now')
-             WHERE id = ?2`
-          ).bind(mismatchReason, txRecord.order_id)
-        ]);
-
-        return jsonResponse({ ResultCode: 0, ResultDesc: "Logged amount mismatch" });
+      if (typeof receiptNumber !== "string" || !receiptNumber.trim() ||
+          !Number.isFinite(paidAmount) || Math.abs(paidAmount - expectedAmount) > 0.001) {
+        return jsonResponse({ ResultCode: 1, ResultDesc: "Payment requires reconciliation" }, 422);
       }
 
+      // The batch is atomic. Every side effect checks PENDING before the final
+      // order update, so another callback's batch becomes a no-op.
+      const pending = "EXISTS (SELECT 1 FROM orders WHERE id = ? AND payment_status = 'PENDING')";
       const statements = [
         env.DB.prepare(
           `UPDATE mpesa_transactions
-           SET mpesa_receipt_number = ?1, transaction_date = ?2, result_code = 0,
-               result_desc = ?3, raw_callback_json = ?4, updated_at = datetime('now')
-           WHERE id = ?5`
-        ).bind(receiptNumber, txDate, resultDesc, JSON.stringify(payload), txRecord.mpesa_tx_id),
-
-        env.DB.prepare(
-          `UPDATE orders
-           SET payment_status = 'PAID', fulfillment_status = 'QUEUED', updated_at = datetime('now')
-           WHERE id = ?1 AND payment_status = 'PENDING'`
-        ).bind(txRecord.order_id)
+           SET mpesa_receipt_number = ?, transaction_date = ?, result_code = 0,
+               result_desc = ?, raw_callback_json = ?, updated_at = datetime('now')
+           WHERE id = ? AND ${pending}`
+        ).bind(receiptNumber, txDate, resultDesc, JSON.stringify(payload), txRecord.mpesa_tx_id, txRecord.order_id)
       ];
 
       if (txRecord.customer_id) {
@@ -100,20 +84,20 @@ export async function onRequestPost(context) {
         statements.push(
           env.DB.prepare(
             `UPDATE customers
-             SET loyalty_points = MAX(0, loyalty_points + ?1),
+             SET loyalty_points = MAX(0, loyalty_points + ?),
                  total_orders_count = total_orders_count + 1,
                  updated_at = datetime('now')
-             WHERE id = ?2`
-          ).bind(netPoints, txRecord.customer_id),
+             WHERE id = ? AND ${pending}`
+          ).bind(netPoints, txRecord.customer_id, txRecord.order_id),
 
           env.DB.prepare(
             `INSERT INTO loyalty_ledger (customer_id, order_id, entry_type, points_delta, description)
-             VALUES (?1, ?2, 'EARN_PURCHASE', ?3, ?4)`
+             SELECT ?, ?, 'EARN_PURCHASE', ?, ? WHERE ${pending}`
           ).bind(
             txRecord.customer_id,
             txRecord.order_id,
             Number(txRecord.points_earned || 0),
-            `Earned on bundle order ${txRecord.order_reference}`
+            `Earned on bundle order ${txRecord.order_reference}`, txRecord.order_id
           )
         );
 
@@ -121,64 +105,68 @@ export async function onRequestPost(context) {
           statements.push(
             env.DB.prepare(
               `INSERT INTO loyalty_ledger (customer_id, order_id, entry_type, points_delta, description)
-               VALUES (?1, ?2, 'REDEEM_DISCOUNT', ?3, ?4)`
+               SELECT ?, ?, 'REDEEM_DISCOUNT', ?, ? WHERE ${pending}`
             ).bind(
               txRecord.customer_id,
               txRecord.order_id,
               -Number(txRecord.points_redeemed),
-              `Redeemed KES 10 discount on ${txRecord.order_reference}`
+              `Redeemed KES 10 discount on ${txRecord.order_reference}`, txRecord.order_id
             )
           );
         }
 
         if (txRecord.applied_referral_code) {
-          const referrer = await env.DB.prepare("SELECT id FROM customers WHERE referral_code = ?1")
+          const referrer = await env.DB.prepare("SELECT id FROM customers WHERE referral_code = ?")
             .bind(txRecord.applied_referral_code)
             .first();
 
           if (referrer) {
             statements.push(
               env.DB.prepare(
-                `UPDATE customers SET loyalty_points = loyalty_points + 25, updated_at = datetime('now') WHERE id = ?1`
-              ).bind(referrer.id),
+                `UPDATE customers SET loyalty_points = loyalty_points + 25, updated_at = datetime('now') WHERE id = ? AND ${pending}`
+              ).bind(referrer.id, txRecord.order_id),
               env.DB.prepare(
                 `INSERT INTO loyalty_ledger (customer_id, order_id, entry_type, points_delta, description)
-                 VALUES (?1, ?2, 'REFERRAL_BONUS', 25, ?3)`
-              ).bind(referrer.id, txRecord.order_id, `Referral bonus from ${txRecord.recipient_phone}`),
+                 SELECT ?, ?, 'REFERRAL_BONUS', 25, ? WHERE ${pending}`
+              ).bind(referrer.id, txRecord.order_id, `Referral bonus from ${txRecord.recipient_phone}`, txRecord.order_id),
               env.DB.prepare(
-                `UPDATE customers SET loyalty_points = loyalty_points + 15, updated_at = datetime('now') WHERE id = ?1`
-              ).bind(txRecord.customer_id),
+                `UPDATE customers SET loyalty_points = loyalty_points + 15, updated_at = datetime('now') WHERE id = ? AND ${pending}`
+              ).bind(txRecord.customer_id, txRecord.order_id),
               env.DB.prepare(
                 `INSERT INTO loyalty_ledger (customer_id, order_id, entry_type, points_delta, description)
-                 VALUES (?1, ?2, 'REFERRAL_BONUS', 15, ?3)`
-              ).bind(txRecord.customer_id, txRecord.order_id, `Welcome bonus using code ${txRecord.applied_referral_code}`)
+                 SELECT ?, ?, 'REFERRAL_BONUS', 15, ? WHERE ${pending}`
+              ).bind(txRecord.customer_id, txRecord.order_id, `Welcome bonus using code ${txRecord.applied_referral_code}`, txRecord.order_id)
             );
           }
         }
       }
 
+      statements.push(env.DB.prepare(
+        `UPDATE orders SET payment_status = 'PAID', updated_at = datetime('now')
+         WHERE id = ? AND payment_status = 'PENDING'`
+      ).bind(txRecord.order_id));
       await env.DB.batch(statements);
     } else {
       await env.DB.batch([
         env.DB.prepare(
           `UPDATE mpesa_transactions
-           SET result_code = ?1, result_desc = ?2, raw_callback_json = ?3, updated_at = datetime('now')
-           WHERE id = ?4`
-        ).bind(resultCode, resultDesc, JSON.stringify(payload), txRecord.mpesa_tx_id),
+           SET result_code = ?, result_desc = ?, raw_callback_json = ?, updated_at = datetime('now')
+           WHERE id = ? AND EXISTS (SELECT 1 FROM orders WHERE id = ? AND payment_status = 'PENDING')`
+        ).bind(resultCode, resultDesc, JSON.stringify(payload), txRecord.mpesa_tx_id, txRecord.order_id),
 
         env.DB.prepare(
           `UPDATE orders
            SET payment_status = 'FAILED', fulfillment_status = 'FAILED',
-               failure_reason = ?1, updated_at = datetime('now')
-           WHERE id = ?2`
+               failure_reason = ?, updated_at = datetime('now')
+           WHERE id = ? AND payment_status = 'PENDING'`
         ).bind(`M-Pesa (${resultCode}): ${resultDesc}`, txRecord.order_id)
       ]);
     }
 
     return jsonResponse({ ResultCode: 0, ResultDesc: "Callback accepted" });
-  } catch (err) {
-    console.error("M-Pesa Callback Error:", err);
-    return jsonResponse({ ResultCode: 0, ResultDesc: "Handled error" });
+  } catch {
+    console.error("M-Pesa callback processing failed");
+    return jsonResponse({ ResultCode: 1, ResultDesc: "Retry callback" }, 503);
   }
 }
 
