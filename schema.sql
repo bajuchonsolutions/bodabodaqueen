@@ -124,3 +124,25 @@ INSERT OR IGNORE INTO products (sku, provider_package_code, ussd_template, categ
   ('SAF-VOICE-45M-24H', 'PKG_V45_24', '*180*5*3*1*{PHONE}*1#', 'VOICE', '45 Mins Daily Talktime', '45 minutes all-network calls for 24 hours', '24 Hours', 38.00, 50.00, 1, 50),
   ('SAF-SMS-200-24H', 'PKG_S200_24', '*180*5*4*1*{PHONE}*1#', 'SMS', '200 Daily SMS', '200 SMS to all networks for 24 hours', '24 Hours', 7.00, 10.00, 0, 60),
   ('SAF-SMS-1000-7D', 'PKG_S1000_7D', '*180*5*4*2*{PHONE}*1#', 'SMS', '1,000 Weekly SMS', '1,000 SMS to all networks for 7 days', '7 Days', 22.00, 30.00, 1, 70);
+
+CREATE TABLE IF NOT EXISTS sim_swap_holds (
+    phone_number TEXT PRIMARY KEY,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- A row in sim_swap_holds represents an active hold on a normalized phone.
+-- All fulfillment workers must claim an order before contacting a provider.
+CREATE TRIGGER IF NOT EXISTS guard_fulfillment_claim
+BEFORE UPDATE OF fulfillment_status ON orders
+WHEN NEW.fulfillment_status = 'PROCESSING'
+ AND OLD.fulfillment_status != 'PROCESSING'
+ AND (
+    NEW.payment_status != 'PAID'
+    OR EXISTS (
+        SELECT 1 FROM sim_swap_holds
+        WHERE phone_number IN (NEW.recipient_phone, NEW.payer_phone)
+    )
+ )
+BEGIN
+    SELECT RAISE(ABORT, 'Order cannot be claimed for fulfillment');
+END;
