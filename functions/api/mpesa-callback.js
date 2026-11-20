@@ -23,7 +23,10 @@ export async function onRequestPost(context) {
 
     const checkoutRequestId = stkCallback.CheckoutRequestID;
     const resultCode = Number(stkCallback.ResultCode);
-    const resultDesc = stkCallback.ResultDesc || "";
+    if (!Number.isInteger(resultCode) || resultCode < 0) {
+      return jsonResponse({ ResultCode: 1, ResultDesc: "Invalid result code" }, 400);
+    }
+    const resultDesc = String(stkCallback.ResultDesc || "").slice(0, 500);
 
     const txRecord = await env.DB.prepare(
       `SELECT
@@ -63,25 +66,24 @@ export async function onRequestPost(context) {
       const expectedAmount = Number(txRecord.amount_kes || 0);
       const txDate = getMeta("TransactionDate") ? String(getMeta("TransactionDate")) : null;
 
-      if (paidAmount + 0.01 < expectedAmount) {
+      // A success without a receipt or a finite, positive amount is not evidence of payment.
+      if (typeof receiptNumber !== "string" || !/^[A-Za-z0-9]{8,20}$/.test(receiptNumber) ||
+          !Number.isFinite(paidAmount) || paidAmount <= 0 ||
+          !Number.isFinite(expectedAmount) || expectedAmount <= 0) {
+        return jsonResponse({ ResultCode: 1, ResultDesc: "Invalid payment metadata; reconciliation required" }, 422);
+      }
+
+      if (Math.abs(paidAmount - expectedAmount) > 0.01) {
+        // Do not mark a potentially settled payment FAILED or release goods.
+        // Persist the callback evidence and leave the order PENDING for reconciliation.
         const mismatchReason = `Amount mismatch: paid KES ${paidAmount}, expected KES ${expectedAmount}`;
-        await env.DB.batch([
-          env.DB.prepare(
-            `UPDATE mpesa_transactions
-             SET mpesa_receipt_number = ?1, transaction_date = ?2, result_code = 0,
-                 result_desc = ?3, raw_callback_json = ?4, updated_at = datetime('now')
-             WHERE id = ?5`
-          ).bind(receiptNumber, txDate, mismatchReason, JSON.stringify(payload), txRecord.mpesa_tx_id),
-
-          env.DB.prepare(
-            `UPDATE orders
-             SET payment_status = 'FAILED', fulfillment_status = 'FAILED',
-                 failure_reason = ?1, updated_at = datetime('now')
-             WHERE id = ?2`
-          ).bind(mismatchReason, txRecord.order_id)
-        ]);
-
-        return jsonResponse({ ResultCode: 0, ResultDesc: "Logged amount mismatch" });
+        await env.DB.prepare(
+          `UPDATE mpesa_transactions
+           SET mpesa_receipt_number = ?1, transaction_date = ?2, result_code = 0,
+               result_desc = ?3, raw_callback_json = ?4, updated_at = datetime('now')
+           WHERE id = ?5`
+        ).bind(receiptNumber, txDate, mismatchReason, JSON.stringify(payload), txRecord.mpesa_tx_id).run();
+        return jsonResponse({ ResultCode: 0, ResultDesc: "Payment held for reconciliation" });
       }
 
       const statements = [
@@ -135,7 +137,7 @@ export async function onRequestPost(context) {
             .bind(txRecord.applied_referral_code)
             .first();
 
-          if (referrer) {
+          if (referrer && referrer.id !== txRecord.customer_id) {
             statements.push(
               env.DB.prepare(
                 `INSERT OR IGNORE INTO loyalty_ledger (customer_id, order_id, entry_type, points_delta, description)
